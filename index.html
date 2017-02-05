@@ -7,7 +7,7 @@
 </style>
 </head>
 <body>
-<form action= "" onSubmit="window.location.reload();" method="POST" id="frm">
+<form action= "" onSubmit="window.reload();" method="POST" id="frm">
   <select name="" id="" onchange="display(this)">
     <option value="">Select an option</option>
     <option value="URL">URL</option>
@@ -43,22 +43,38 @@
 <script>
 function restore()
 { 
-  if(sessionStorage.op === undefined || sessionStorage.pa === undefined || sessionStorage.url === undefined || sessionStorage.menu === undefined)
+  if(sessionStorage.op === undefined && sessionStorage.pa === undefined && sessionStorage.url === undefined && sessionStorage.menu === undefined)
   {
     alert('Nothing to restore!'); 
   }
   else
   {
-    var options = sessionStorage.op.split("},{");
-    var params = sessionStorage.pa.split("},{");
-    
-    if(params.length !== 1)
+    if(sessionStorage.op===undefined)
+    {
+      var options = [];
+    }
+    else
+    {
+      var options = sessionStorage.op.split("},{");
+    }
+
+    if(sessionStorage.pa===undefined)
+    {
+      var params = [];
+    }
+    else
+    {
+      var params = sessionStorage.pa.split("},{");
+      console.log(options);
+    }
+
+    if(params.length > 1)
     {
       params[0] += "}";
       params[params.length-1] = "{"+params[params.length-1];
     }
     
-    if(options.length !== 1)
+    if(options.length > 1)
     {
       options[0] += "}";
       options[options.length-1] = "{"+options[options.length-1];
@@ -77,12 +93,15 @@ function restore()
       params[i] = "{"+params[i]+"}";
     }
     
+    if(sessionStorage.url !== undefined)
     document.getElementsByClassName("URL")[0].children[0].setAttribute("value",sessionStorage.url);
     
+    if(sessionStorage.menu !== undefined)
     document.getElementsByClassName("MENU")[0].children[0].setAttribute("value",sessionStorage.menu);
        
-    for(var i=0;i<ol;i++)
+    for(var i=0;i<ol&&options[0]!="";i++)
     { 
+      console.log(ol);
       var obj = JSON.parse(options[i]);
       var parent = document.createElement("div");
       parent.setAttribute("class","OPTION");
@@ -103,7 +122,7 @@ function restore()
       document.forms[0].appendChild(parent);
     }
    
-    for(var i=0;i<pl;i++)
+    for(var i=0;i<pl&&params[0]!="";i++)
     {
       
       var obj = JSON.parse(params[i]);
@@ -125,7 +144,6 @@ function restore()
       parent.appendChild(button);
     
       document.forms[0].appendChild(parent);
-      console.log("done");
     }
   }
   document.getElementById("rstr").remove();
