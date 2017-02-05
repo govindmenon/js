@@ -1,0 +1,242 @@
+<html>
+<head>
+<style type="text/css">
+  .URL, .MENU {
+  display: none;
+}
+</style>
+</head>
+<body>
+<form action= "" onSubmit="window.reload();" method="POST" id="frm">
+  <select name="" id="" onchange="display(this)">
+    <option value="">Select an option</option>
+    <option value="URL">URL</option>
+    <option value="MENU">MENU</option>
+  </select>
+  <!--if URL is selected -->
+  <div class="URL">
+    <input type="text" placeholder="URL Name">
+    <button onclick="add(this)" type="button">Add Params</button>
+    <!-- Param Template -->
+       <!--<div class="PARAM">    
+         <input placeholder="Param Name">
+         <input placeholder="Param Value">
+         <input type="button" value="Remove">
+       </div>-->
+  </div>
+  <!--if MENU is selected -->
+  <div class="MENU">
+    <input type="text" placeholder="MENU Name">
+    <button onclick="add(this)" type="button">Add Options</button>
+    <!-- Param Template -->
+       <!--<div class="OPTION">
+         <input placeholder="Option Name">
+         <input placeholder="Option Description">
+         <input type="button" value="Remove">
+       </div>-->
+  </div>
+  <button onclick="restore()" id="rstr" type="button">
+  Restore
+  </button>
+  <input type="submit" value="SUBMIT" onclick="save()">
+</form>
+<script>
+function restore()
+{ 
+  if(sessionStorage.op === undefined || sessionStorage.pa === undefined || sessionStorage.url === undefined || sessionStorage.menu === undefined)
+  {
+    alert('Nothing to restore!'); 
+  }
+  else
+  {
+    var options = sessionStorage.op.split("},{");
+    var params = sessionStorage.pa.split("},{");
+    
+    if(params.length !== 1)
+    {
+      params[0] += "}";
+      params[params.length-1] = "{"+params[params.length-1];
+    }
+    
+    if(options.length !== 1)
+    {
+      options[0] += "}";
+      options[options.length-1] = "{"+options[options.length-1];
+    }
+    
+    var ol = (options.length===undefined)?0:options.length;
+    var pl = (params.length===undefined)?0:params.length;
+    
+    for(var i=1;i<ol-1;i++)
+    {
+      options[i] = "{"+options[i]+"}";
+    }
+    
+    for(var i=1;i<pl-1;i++)
+    {
+      params[i] = "{"+params[i]+"}";
+    }
+    
+    document.getElementsByClassName("URL")[0].children[0].setAttribute("value",sessionStorage.url);
+    
+    document.getElementsByClassName("MENU")[0].children[0].setAttribute("value",sessionStorage.menu);
+       
+    for(var i=0;i<ol;i++)
+    { 
+      var obj = JSON.parse(options[i]);
+      var parent = document.createElement("div");
+      parent.setAttribute("class","OPTION");
+      var name = document.createElement("input");
+      name.setAttribute("placeholder","Option Name");
+      name.setAttribute("value",obj.name);
+      var value = document.createElement("input");
+      value.setAttribute("placeholder","Option Description");
+      value.setAttribute("value",obj.desc);
+      var button = document.createElement("input");
+      button.setAttribute("type","button");
+      button.setAttribute("value","Remove");
+      button.setAttribute("onclick","remove(this)");
+      parent.appendChild(name);
+      parent.appendChild(value);
+      parent.appendChild(button);
+    
+      document.forms[0].appendChild(parent);
+    }
+   
+    for(var i=0;i<pl;i++)
+    {
+      
+      var obj = JSON.parse(params[i]);
+      console.log(obj.name+" "+obj.value);
+      var parent = document.createElement("div");
+      parent.setAttribute("class","PARAM");
+      var name = document.createElement("input");
+      name.setAttribute("placeholder","Param Name");
+      name.setAttribute("value",String(obj.name));
+      var value = document.createElement("input");
+      value.setAttribute("placeholder","Param Value");
+      value.setAttribute("value",String(obj.value));
+      var button = document.createElement("input");
+      button.setAttribute("type","button");
+      button.setAttribute("value","Remove");
+      button.setAttribute("onclick","remove(this)");
+      parent.appendChild(name);
+      parent.appendChild(value);
+      parent.appendChild(button);
+    
+      document.forms[0].appendChild(parent);
+      console.log("done");
+    }
+  }
+  document.getElementById("rstr").remove();
+}
+
+function display(ele)
+{
+  if(ele.value === "URL")
+  {
+    document.getElementsByClassName("MENU")[0].style.display = "none";
+    document.getElementsByClassName("URL")[0].style.display = "block";
+    var p = document.getElementsByClassName("PARAM");
+    var o = document.getElementsByClassName("OPTION");
+    for(var i=0;i<p.length;i++)
+    {
+      p[i].style.display = "block";
+    }
+    for(var i=0;i<o.length;i++)
+    {
+      o[i].style.display = "none";
+    }
+  }
+  else
+  {
+    document.getElementsByClassName("MENU")[0].style.display = "block";
+    document.getElementsByClassName("URL")[0].style.display = "none";
+  
+    var p = document.getElementsByClassName("PARAM");
+    var o = document.getElementsByClassName("OPTION");
+    for(var i=0;i<p.length;i++)
+    {
+      p[i].style.display = "none";
+    }
+    for(var i=0;i<o.length;i++)
+    {
+      o[i].style.display = "block";
+    }
+  }
+}
+
+
+function add(ele)
+{
+  if(ele.innerHTML.indexOf("Params")>=0)
+  {
+    var parent = document.createElement("div");
+    parent.setAttribute("class","PARAM");
+    var name = document.createElement("input");
+    name.setAttribute("placeholder","Param Name");
+    var value = document.createElement("input");
+    value.setAttribute("placeholder","Param Value");
+    var button = document.createElement("input");
+    button.setAttribute("type","button");
+    button.setAttribute("value","Remove");
+    button.setAttribute("onclick","remove(this)");
+    parent.appendChild(name);
+    parent.appendChild(value);
+    parent.appendChild(button);
+    
+    document.forms[0].appendChild(parent);
+  }
+  else
+  {
+    var parent = document.createElement("div");
+    parent.setAttribute("class","OPTION");
+    var name = document.createElement("input");
+    name.setAttribute("placeholder","Option Name");
+    var value = document.createElement("input");
+    value.setAttribute("placeholder","Option Description");
+    var button = document.createElement("input");
+    button.setAttribute("type","button");
+    button.setAttribute("value","Remove");
+    button.setAttribute("onclick","remove(this)");
+    parent.appendChild(name);
+    parent.appendChild(value);
+    parent.appendChild(button);
+    
+    document.forms[0].appendChild(parent);
+  }
+}
+
+function remove(ele)
+{
+  ele.parentNode.remove();
+}
+
+function save()
+{
+  sessionStorage.menu = document.getElementsByClassName("MENU")[0].children[0].value;
+  sessionStorage.url = document.getElementsByClassName("URL")[0].children[0].value;
+  
+  var options = [];
+  var params = [];
+  
+  var o = document.getElementsByClassName("OPTION");
+  var p = document.getElementsByClassName("PARAM");
+  
+  for(var i=0;i<o.length;i++)
+  {
+    var ob = {name: o[i].children[0].value, desc: o[i].children[1].value};
+    options.push(JSON.stringify(ob));
+  }
+  for(var i=0;i<p.length;i++)
+  {
+    var ob = {name: p[i].children[0].value, value: p[i].children[1].value};
+    params.push(JSON.stringify(ob));
+  }
+  
+  sessionStorage.op = options;
+  sessionStorage.pa = params;
+}
+</script>
+</body>
+</html>
